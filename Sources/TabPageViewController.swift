@@ -124,6 +124,12 @@ public extension TabPageViewController {
             tabDelegate?.didTapActionTab(at: index)
         }
     }
+
+    public func insert(_ viewController: UIViewController, title: String, at index: Int) {
+        let item: (viewController: UIViewController, title: String, type: TabType) = (viewController: viewController, title: title, type: .viewController)
+        tabItems.insert(item, at: index)
+        tabView.insertItem(((title: item.title, displayable: item.type == .viewController)), at: IndexPath(row: index, section: 0))
+    }
 }
 
 

@@ -280,6 +280,11 @@ extension TabView {
             .flatMap { $0 as? TabCollectionCell }
             .forEach { $0.isCurrent = false }
     }
+
+    func insertItem(_ item: (title: String, displayable: Bool), at indexPath: IndexPath) {
+        pageTabItems.insert(item, at: indexPath.row)
+        collectionView.insertItems(at: [indexPath])
+    }
 }
 
 

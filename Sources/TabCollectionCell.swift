@@ -23,7 +23,7 @@ class TabCollectionCell: UICollectionViewCell {
             invalidateIntrinsicContentSize()
         }
     }
-    var displayable: Bool = true 
+    var displayable: Bool = true
     var isCurrent: Bool = false {
         didSet {
             currentBarView.isHidden = !isCurrent

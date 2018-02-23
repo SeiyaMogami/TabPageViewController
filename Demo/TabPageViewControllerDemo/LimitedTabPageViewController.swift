@@ -19,16 +19,23 @@ class LimitedTabPageViewController: TabPageViewController {
         tabItems = [
             (vc1, "First", TabType.viewController),
             (vc2, "Second", TabType.viewController),
-            (UIViewController(), "Third", TabType.viewController),
-            (UIViewController(), "Forth", TabType.viewController),
-            (UIViewController(), "Fifth", TabType.viewController),
+//            (UIViewController(), "Third", TabType.viewController),
+//            (UIViewController(), "Forth", TabType.viewController),
+//            (UIViewController(), "Fifth", TabType.viewController),
             (UIViewController(), "Action", TabType.action)
         ]
         option.tabWidth = view.frame.width / CGFloat(tabItems.count)
         option.hidesTopViewOnSwipeType = .all
+        tabDelegate = self
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension LimitedTabPageViewController: TabPageViewControllerDelegate {
+    func didTapActionTab(at index: Int) {
+        print("ACTION: \(index)")
     }
 }

@@ -320,8 +320,7 @@ extension TabPageViewController {
 extension TabPageViewController: UIPageViewControllerDataSource {
 
     fileprivate func nextViewController(_ viewController: UIViewController, isAfter: Bool) -> UIViewController? {
-
-        guard var index = tabItems.filter({$0.type == .viewController}).map({$0.viewController}).index(of: viewController) else {
+        guard var index = tabItems.map({$0.viewController}).index(of: viewController) else {
             return nil
         }
         self.indexSelected?(index)
@@ -331,15 +330,15 @@ extension TabPageViewController: UIPageViewControllerDataSource {
             index -= 1
         }
 
-        if isInfinity {
-            if index < 0 {
-                index = tabItems.count - 1
-            } else if index == tabItems.count {
-                index = 0
-            }
-        }
+//        if isInfinity {
+//            if index < 0 {
+//                index = tabItems.count - 1
+//            } else if index == tabItems.count {
+//                index = 0
+//            }
+//        }
 
-        if index >= 0 && index < tabItems.count {
+        if index >= 0 && index < tabItems.filter({$0.type == .viewController}).count {
             return tabItems[index].viewController
         }
         return nil

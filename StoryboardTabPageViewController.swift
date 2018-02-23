@@ -17,7 +17,7 @@ class StoryboardTabPageViewController: TabPageViewController {
         print("view did load")
 
         for (i, vc) in vcs.enumerated() {
-            self.tabItems.append((viewController: vc,  title: "viewcontroller\(i)", type: .viewController))
+            self.tabItems.append(TabItem(title: "viewcontroller\(i)", viewController: vc))
         }
         super.viewDidLoad()
     }

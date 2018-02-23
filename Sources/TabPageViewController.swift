@@ -8,11 +8,30 @@
 
 import UIKit
 
+public protocol TabPageViewControllerDelegate: class {
+    func didTapActionTab(at index: Int)
+}
+
 open class TabPageViewController: UIPageViewController {
-    open var isInfinity: Bool = false
+    public enum TabType {
+        case viewController
+        case action
+    }
+    // currently unavailable for infinity mode
+    private var isInfinity: Bool = false
     open var option: TabPageOption = TabPageOption()
-    open var tabItems: [(viewController: UIViewController, title: String)] = []
+    open var tabItems: [(viewController: UIViewController, title: String, type: TabType)] = [] {
+        didSet {
+            let length = tabItems.count
+            for i in 0 ..< length where tabItems[i].type == .action {
+                if i != length - 1 {
+                    fatalError("Sorry, not implemented to put action into except for last item now.")
+                }
+            }
+        }
+    }
     open var indexSelected: ((Int) -> Void)?
+    open weak var tabDelegate: TabPageViewControllerDelegate?
     
     var currentIndex: Int? {
         guard let viewController = viewControllers?.first else {
@@ -82,24 +101,28 @@ open class TabPageViewController: UIPageViewController {
 public extension TabPageViewController {
 
     public func displayControllerWithIndex(_ index: Int, direction: UIPageViewControllerNavigationDirection, animated: Bool) {
+        switch tabItems[index].type {
+        case .viewController:
+            beforeIndex = index
+            shouldScrollCurrentBar = false
+            let nextViewControllers: [UIViewController] = [tabItems[index].viewController]
 
-        beforeIndex = index
-        shouldScrollCurrentBar = false
-        let nextViewControllers: [UIViewController] = [tabItems[index].viewController]
+            let completion: ((Bool) -> Void) = { [weak self] _ in
+                self?.shouldScrollCurrentBar = true
+                self?.beforeIndex = index
+            }
 
-        let completion: ((Bool) -> Void) = { [weak self] _ in
-            self?.shouldScrollCurrentBar = true
-            self?.beforeIndex = index
+            setViewControllers(
+                nextViewControllers,
+                direction: direction,
+                animated: animated,
+                completion: completion)
+
+            guard isViewLoaded else { return }
+            tabView.updateCurrentIndex(index, shouldScroll: true)
+        case .action:
+            tabDelegate?.didTapActionTab(at: index)
         }
-
-        setViewControllers(
-            nextViewControllers,
-            direction: direction,
-            animated: animated,
-            completion: completion)
-
-        guard isViewLoaded else { return }
-        tabView.updateCurrentIndex(index, shouldScroll: true)
     }
 }
 
@@ -179,7 +202,7 @@ extension TabPageViewController {
 
         view.addConstraints([top, left, right])
 
-        tabView.pageTabItems = tabItems.map({ $0.title})
+        tabView.pageTabItems = tabItems.map({ (title: $0.title, displayable: $0.type == .viewController )})
         tabView.updateCurrentIndex(beforeIndex, shouldScroll: true)
 
         tabView.pageItemPressedBlock = { [weak self] (index: Int, direction: UIPageViewControllerNavigationDirection) in
@@ -298,7 +321,7 @@ extension TabPageViewController: UIPageViewControllerDataSource {
 
     fileprivate func nextViewController(_ viewController: UIViewController, isAfter: Bool) -> UIViewController? {
 
-        guard var index = tabItems.map({$0.viewController}).index(of: viewController) else {
+        guard var index = tabItems.filter({$0.type == .viewController}).map({$0.viewController}).index(of: viewController) else {
             return nil
         }
         self.indexSelected?(index)

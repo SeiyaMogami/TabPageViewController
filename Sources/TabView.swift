@@ -11,7 +11,7 @@ import UIKit
 internal class TabView: UIView {
 
     var pageItemPressedBlock: ((_ index: Int, _ direction: UIPageViewControllerNavigationDirection) -> Void)?
-    var pageTabItems: [String] = [] {
+    var pageTabItems: [(title: String, displayable: Bool)] = [] {
         didSet {
             pageTabItemsCount = pageTabItems.count
             beforeIndex = pageTabItems.count
@@ -40,7 +40,7 @@ internal class TabView: UIView {
     @IBOutlet fileprivate weak var bottomBarViewHeightConstraint: NSLayoutConstraint!
 
     init(isInfinity: Bool, option: TabPageOption) {
-       super.init(frame: CGRect.zero)
+        super.init(frame: CGRect.zero)
         self.option = option
         self.isInfinity = isInfinity
         Bundle(for: TabView.self).loadNibNamed("TabView", owner: self, options: nil)
@@ -48,36 +48,36 @@ internal class TabView: UIView {
         contentView.backgroundColor = option.tabBackgroundColor.withAlphaComponent(option.tabBarAlpha)
 
         let top = NSLayoutConstraint(item: contentView,
-            attribute: .top,
-            relatedBy: .equal,
-            toItem: self,
-            attribute: .top,
-            multiplier: 1.0,
-            constant: 0.0)
+                                     attribute: .top,
+                                     relatedBy: .equal,
+                                     toItem: self,
+                                     attribute: .top,
+                                     multiplier: 1.0,
+                                     constant: 0.0)
 
         let left = NSLayoutConstraint(item: contentView,
-            attribute: .leading,
-            relatedBy: .equal,
-            toItem: self,
-            attribute: .leading,
-            multiplier: 1.0,
-            constant: 0.0)
+                                      attribute: .leading,
+                                      relatedBy: .equal,
+                                      toItem: self,
+                                      attribute: .leading,
+                                      multiplier: 1.0,
+                                      constant: 0.0)
 
         let bottom = NSLayoutConstraint (item: self,
-            attribute: .bottom,
-            relatedBy: .equal,
-            toItem: contentView,
-            attribute: .bottom,
-            multiplier: 1.0,
-            constant: 0.0)
+                                         attribute: .bottom,
+                                         relatedBy: .equal,
+                                         toItem: contentView,
+                                         attribute: .bottom,
+                                         multiplier: 1.0,
+                                         constant: 0.0)
 
         let right = NSLayoutConstraint(item: self,
-            attribute: .trailing,
-            relatedBy: .equal,
-            toItem: contentView,
-            attribute: .trailing,
-            multiplier: 1.0,
-            constant: 0.0)
+                                       attribute: .trailing,
+                                       relatedBy: .equal,
+                                       toItem: contentView,
+                                       attribute: .trailing,
+                                       multiplier: 1.0,
+                                       constant: 0.0)
 
         contentView.translatesAutoresizingMaskIntoConstraints = false
         self.addConstraints([top, left, bottom, right])
@@ -96,20 +96,20 @@ internal class TabView: UIView {
             collectionView.addSubview(currentBarView)
             currentBarView.translatesAutoresizingMaskIntoConstraints = false
             let top = NSLayoutConstraint(item: currentBarView,
-                attribute: .top,
-                relatedBy: .equal,
-                toItem: collectionView,
-                attribute: .top,
-                multiplier: 1.0,
-                constant: option.tabHeight - currentBarViewHeightConstraint.constant)
+                                         attribute: .top,
+                                         relatedBy: .equal,
+                                         toItem: collectionView,
+                                         attribute: .top,
+                                         multiplier: 1.0,
+                                         constant: option.tabHeight - currentBarViewHeightConstraint.constant)
 
             let left = NSLayoutConstraint(item: currentBarView,
-                attribute: .leading,
-                relatedBy: .equal,
-                toItem: collectionView,
-                attribute: .leading,
-                multiplier: 1.0,
-                constant: 0.0)
+                                          attribute: .leading,
+                                          relatedBy: .equal,
+                                          toItem: collectionView,
+                                          attribute: .leading,
+                                          multiplier: 1.0,
+                                          constant: 0.0)
             currentBarViewLeftConstraint = left
             collectionView.addConstraints([top, left])
         }
@@ -175,7 +175,7 @@ extension TabView {
                 collectionView.contentOffset.x = collectionViewContentOffsetX + scroll
             } else {
                 if scrollRate > 0 {
-                currentBarViewLeftConstraint?.constant = currentCell.frame.minX + scrollRate * currentCell.frame.width
+                    currentBarViewLeftConstraint?.constant = currentCell.frame.minX + scrollRate * currentCell.frame.width
                 } else {
                     currentBarViewLeftConstraint?.constant = currentCell.frame.minX + nextCell.frame.width * scrollRate
                 }
@@ -251,12 +251,12 @@ extension TabView {
             }
             UIView.animate(withDuration: 0.2, animations: {
                 self.layoutIfNeeded()
-                }, completion: { _ in
-                    if !animated && shouldScroll {
-                        cell.isCurrent = true
-                    }
-                    
-                    self.updateCollectionViewUserInteractionEnabled(true)
+            }, completion: { _ in
+                if !animated && shouldScroll {
+                    cell.isCurrent = true
+                }
+
+                self.updateCollectionViewUserInteractionEnabled(true)
             })
         }
         beforeIndex = currentIndex
@@ -299,10 +299,15 @@ extension TabView: UICollectionViewDataSource {
 
     fileprivate func configureCell(_ cell: TabCollectionCell, indexPath: IndexPath) {
         let fixedIndex = isInfinity ? indexPath.item % pageTabItemsCount : indexPath.item
-        cell.item = pageTabItems[fixedIndex]
+        cell.item = pageTabItems[fixedIndex].title
+        cell.displayable = pageTabItems[fixedIndex].displayable
         cell.option = option
         cell.isCurrent = fixedIndex == (currentIndex % pageTabItemsCount)
         cell.tabItemButtonPressedBlock = { [weak self, weak cell] in
+            guard cell?.displayable == true else {
+                self?.pageItemPressedBlock?(fixedIndex, UIPageViewControllerNavigationDirection.forward)
+                return
+            }
             var direction: UIPageViewControllerNavigationDirection = .forward
             if let pageTabItemsCount = self?.pageTabItemsCount, let currentIndex = self?.currentIndex {
                 if self?.isInfinity == true {

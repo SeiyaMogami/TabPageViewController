@@ -16,7 +16,14 @@ class LimitedTabPageViewController: TabPageViewController {
         let vc1 = UIViewController()
         vc1.view.backgroundColor = UIColor.white
         let vc2 = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ListViewController")
-        tabItems = [(vc1, "First"), (vc2, "Second")]
+        tabItems = [
+            (vc1, "First", TabType.viewController),
+            (vc2, "Second", TabType.viewController),
+            (UIViewController(), "Third", TabType.viewController),
+            (UIViewController(), "Forth", TabType.viewController),
+            (UIViewController(), "Fifth", TabType.viewController),
+            (UIViewController(), "Action", TabType.action)
+        ]
         option.tabWidth = view.frame.width / CGFloat(tabItems.count)
         option.hidesTopViewOnSwipeType = .all
     }

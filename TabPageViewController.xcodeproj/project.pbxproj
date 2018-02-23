@@ -272,6 +272,9 @@
 					OBJ_16 = {
 						ProvisioningStyle = Automatic;
 					};
+					OBJ_23 = {
+						LastSwiftMigration = 0920;
+					};
 				};
 			};
 			buildConfigurationList = OBJ_2 /* Build configuration list for PBXProject "TabPageViewController" */;
@@ -499,6 +502,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = TabPageViewController;
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SWIFT_VERSION = 4.0;
 				TARGET_NAME = TabPageViewController;
 			};
 			name = Debug;
@@ -524,6 +528,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = TabPageViewController;
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SWIFT_VERSION = 4.0;
 				TARGET_NAME = TabPageViewController;
 			};
 			name = Release;

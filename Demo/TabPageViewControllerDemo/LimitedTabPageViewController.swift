@@ -19,9 +19,6 @@ class LimitedTabPageViewController: TabPageViewController {
         tabItems = [
             (vc1, "First", TabType.viewController),
             (vc2, "Second", TabType.viewController),
-//            (UIViewController(), "Third", TabType.viewController),
-//            (UIViewController(), "Forth", TabType.viewController),
-//            (UIViewController(), "Fifth", TabType.viewController),
             (UIViewController(), "Action", TabType.action)
         ]
         option.tabWidth = view.frame.width / CGFloat(tabItems.count)
